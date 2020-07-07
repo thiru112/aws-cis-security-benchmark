@@ -316,7 +316,76 @@ def control_1_16_policy_attached_grp_roles():
     all_users_paginator = IAM_CLIENT.get_paginator('list_users')
     for users in all_users_paginator.paginate():
         for user in users['Users']:
-            print(user)
+            if user is None:
+                continue
+            if IAM_CLIENT.list_attached_user_policies(UserName=user['UserName'])['AttachedPolicies']:
+                cont.fail_reason = "Managed Policies attached directly to user."
+                cont.offenders = user['Arn'] + ":=> Managed policy"
+            if IAM_CLIENT.list_user_policies(UserName=user['UserName'])['PolicyNames']:
+                cont.fail_reason = "Inline Policies are attached directly to user."
+                cont.offenders = user['Arn'] + ":=> Inline policy"
+    if not cont.offenders:
+        cont.result = True
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
+
+def control_1_17_current_contact_details():
+    cont = Control('1.17', 'Maintain current contact details', False)
+    cont.offenders = 'Check manually in AWS console'
+    cont.fail_reason = 'No API available to perform this action'
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
+
+def control_1_18_security_contact_info():
+    cont = Control(
+        '1.18', 'Ensure security contact information is registered', False)
+    cont.fail_reason = 'Check manually in AWS console'
+    cont.fail_reason = 'No API available to perform this action'
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
+
+def control_1_19_iam_instance_roles():
+    cont = Control(
+        '1.19', 'Ensure IAM instance roles are used for AWS resource access from instances', False)
+    cont.fail_reason = 'Check manually in AWS console'
+    cont.fail_reason = 'No API available to perform this action'
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
+
+def control_1_20_support_role_manage_incident():
+    cont = Control(
+        '1.20', 'Ensure a support role has been created to manage incidents with AWS Support', True)
+    entities = IAM_CLIENT.list_entities_for_policy(
+        PolicyArn='arn:aws:iam::aws:policy/AWSSupportAccess'
+    )
+    if entities['PolicyGroups'] or entities['PolicyUsers'] or entities['PolicyRoles']:
+        cont.result = True
+    else:
+        cont.fail_reason = 'AWSSupportAccess is not attached to any IAM user,group or role'
+        cont.offenders = 'AWSSupportAccess should be attached to IAM user,group or role in order to manage incidents'
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
+
+def control_1_21_intial_access_keys_setup():
+    cont = Control(
+        '1.21', 'Do not setup access keys during initial user setup for all IAM users that have a console password', False)
+    users_paginate = IAM_CLIENT.get_paginator('list_users')
+    for users in users_paginate.paginate():
+        for user in users['Users']:
+            for access_time in IAM_CLIENT.list_access_keys(UserName=user['UserName'])['AccessKeyMetadata']:
+                if access_time['CreateDate'] == access_time['CreateDate']:
+                    cont.fail_reason = 'Keys that were created at the same time as the user profile'
+                    cont.offenders = user['UserName']
+    if not cont.offenders:
+        cont.result = True
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
 
 def main():
     control_1_1_no_root_account_use()

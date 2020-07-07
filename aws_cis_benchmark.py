@@ -7,7 +7,7 @@ def main():
 
     if parsed.json:
         # print(iam.get_cred_report()[0])
-        print(iam.control_1_16_policy_attached_grp_roles())
+        print(iam.control_1_21_intial_access_keys_setup())
 
 
 if __name__ == "__main__":
