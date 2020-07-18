@@ -387,5 +387,27 @@ def control_1_21_intial_access_keys_setup():
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
 
 
+def control_1_22_iam_full_admin_privileges():
+    cont = Control(
+        '1.22', 'Ensure IAM policies that allow full "*:*" administrative privileges are not created', True)
+    policies_paginator = IAM_CLIENT.get_paginator('list_policies')
+    for policies in policies_paginator.paginate(Scope='Local', OnlyAttached=False):
+        for each_policy in policies['Policies']:
+            statements = IAM_CLIENT.get_policy_version(
+                PolicyArn=each_policy['Arn'], VersionId=each_policy['DefaultVersionId'])['PolicyVersion']['Document']['Statement']
+            if isinstance(statements, list):
+                for each_statement in statements:
+                    if 'Action' in each_statement.keys() and each_statement['Effect'] == 'Allow':
+                        if isinstance(each_statement['Action'], str) or isinstance(each_statement['Resource'], str):
+                            if each_statement['Action'] == '*' and each_statement['Resource'] == '*':
+                                cont.fail_reason = 'IAM policies has full "*:*" administrative privilege'
+                                cont.offenders = each_policy['Arn']
+
+    if not cont.offenders:
+        cont.result = True
+
+    return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
+
+
 def main():
     control_1_1_no_root_account_use()
