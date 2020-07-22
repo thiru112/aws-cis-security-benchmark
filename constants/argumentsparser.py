@@ -18,3 +18,9 @@ arg_group.add_argument('-j', '--json', action='store_true',
 
 arg_group.add_argument('-v', '--version', action='store_true',
                        help='Display version of the tool')
+
+arg_parse.add_argument('-f', '--file_name', action='store', default='aws_cis_benchmark_output', type=str,
+                       help='To store output with given file name')
+
+arg_parse.add_argument('-p', '--path', action='store', default='.', type=str,
+                       help='To store output in specified file path')
