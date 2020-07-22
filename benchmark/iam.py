@@ -306,6 +306,7 @@ def control_1_15_security_question():
         '1.15', 'Ensure security questions are registered in the AWS account', False)
     cont.fail_reason = 'No API available to perform this action'
     cont.offenders = 'Check it manually using the AWS console'
+    cont.result = None
 
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
 
@@ -334,6 +335,7 @@ def control_1_17_current_contact_details():
     cont = Control('1.17', 'Maintain current contact details', False)
     cont.offenders = 'Check manually in AWS console'
     cont.fail_reason = 'No API available to perform this action'
+    cont.result = None
 
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
 
@@ -343,6 +345,7 @@ def control_1_18_security_contact_info():
         '1.18', 'Ensure security contact information is registered', False)
     cont.fail_reason = 'Check manually in AWS console'
     cont.fail_reason = 'No API available to perform this action'
+    cont.result = None
 
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
 
@@ -352,6 +355,7 @@ def control_1_19_iam_instance_roles():
         '1.19', 'Ensure IAM instance roles are used for AWS resource access from instances', False)
     cont.fail_reason = 'Check manually in AWS console'
     cont.fail_reason = 'No API available to perform this action'
+    cont.result = None
 
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
 
@@ -407,7 +411,3 @@ def control_1_22_iam_full_admin_privileges():
         cont.result = True
 
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
-
-
-def main():
-    control_1_1_no_root_account_use()

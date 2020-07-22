@@ -187,5 +187,6 @@ def control_2_9_vpc_logging_enabled():
         '2.9', 'Ensure VPC flow logging is enabled in all VPCs', True)
     cont.fail_reason = 'API is not available to perform this action'
     cont.offenders = 'Cannot perform this action'
+    cont.result = None
 
     return {'control_id': cont.id, 'scored': cont.scored, 'desc': cont.desc, 'result': cont.result, 'fail_reason': cont.fail_reason, 'offenders': cont.offenders}
