@@ -66,15 +66,16 @@ def main():
             field_names = ['control_id', 'scored', 'desc', 'result', 'fail_reason', 'offenders']
             if '.' in parsed.path:
                 with open('{}.csv'.format(parsed.file_name), 'w') as csv_out:
-                    dict_writer = csv.DictWriter(csv_out, field_names)
-                    dict_writer.writeheader()
+                    dict_writer = csv.writer(csv_out, delimiter=';', quotechar='`', quoting=csv.QUOTE_MINIMAL)
+                    dict_writer.writerow(field_names)
                     for data in benchmark():
-                        dict_writer.writerow(str(data.values()))
+                        dict_writer.writerow(data.values())
             else:
                 with open('{}/{}.csv'.format(parsed.file_name), 'x') as csv_out:
-                    dict_writer = csv.DictWriter(csv_out, field_names)
-                    dict_writer.writeheader()
-                    dict_writer.writerows(benchmark())
+                    dict_writer = csv.writer(csv_out, delimiter=';', quotechar='`', quoting=csv.QUOTE_MINIMAL)
+                    dict_writer.writerow(field_names)
+                    for data in benchmark():
+                        dict_writer.writerow(data.values())
         except FileExistsError:
             print('The given file name is already exists in ', parsed.path)
         except Exception as e:
