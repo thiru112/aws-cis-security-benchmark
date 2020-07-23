@@ -35,7 +35,7 @@ html = """
           <li class="nav-item">
             <a
               class="nav-link"
-              href="https://bitbucket.org/thiru_ap/aws-cis-benchmark/src/master/"
+              href="https://github.com/thiru112/aws-cis-security-benchmark"
               target="_blank"
               >GitHub</a
             >
