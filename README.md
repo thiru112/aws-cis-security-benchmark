@@ -1,6 +1,6 @@
 # aws-cis-security-benchmark
 
-This script will evaluate your AWS account against CIS Amazon Web Services Foundations Benchmark `v1.2.0 - 05-23-2018`. It automates the entire checklist, instead of manually checking each control manually. The policy script `aws_script_policy.json` is minimum permission that this script need to execute in AWS environment.
+This script will evaluate your AWS account against CIS Amazon Web Services Foundations Benchmark `v1.2.0 - 05-23-2018`. It automates the entire checklist, instead of manually checking each control. The policy script `aws_script_policy.json` is minimum permission that this script need to execute in AWS environment.
 
 ![HTML REPORT](img1.png)
 ![HTML REPORT](img2.png)
@@ -32,7 +32,7 @@ optional arguments:
   -p PATH, --path PATH  To store output in specified file path
 ```
 
-- **FILE_NAME** - it's an optional argument, if no value is given the filename will be `aws_cis_benvhamrk_output.{json|csv|html}`.
+- **FILE_NAME** - it's an optional argument, if no value is given the filename will be `aws_cis_benchmark_output.{json|csv|html}`.
 - **PATH** - it's an optional argument, if no value is given the output path will the `current directory` where you run this script.
 
 ## Features
