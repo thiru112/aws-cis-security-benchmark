@@ -1,4 +1,5 @@
 from constants.argumentsparser import arg_parse
+from constants.constant import AWS_CIS_BENCHMARK_VERSION, TOOL_VERSION
 
 import json
 import csv
@@ -95,7 +96,10 @@ def main():
         except FileExistsError:
             print('The given file name is already exists in ', parsed.path)
         except Exception as e:
-            print(e)        
+            print(e) 
+    elif parsed.version:
+        print("AWS CIS BENCHMARK VERSION:", AWS_CIS_BENCHMARK_VERSION)
+        print("TOOL VERSION:", TOOL_VERSION)
 
 if __name__ == "__main__":
     main()
