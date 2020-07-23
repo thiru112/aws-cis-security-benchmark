@@ -83,7 +83,7 @@ def main():
     elif parsed.html:
         from constants.report_html import html, html2
         output = benchmark()
-        iam_res, log_res, mon_res, net_res = each_res(output[0:21]), each_res(output[22:30]), each_res(output[31:44]), each_res(output[45:])
+        iam_res, log_res, mon_res, net_res = each_res(output[0:22]), each_res(output[22:31]), each_res(output[31:45]), each_res(output[45:])
         res_html = html + str({'iam_res': iam_res, 'log_res': log_res, 'mon_res': mon_res, 'net_res': net_res}) + "; var output="+ json.dumps(output) + ";"+ html2
         try:
             if '.' in parsed.path:
