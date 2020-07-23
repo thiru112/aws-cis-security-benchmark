@@ -1,5 +1,1 @@
 boto3==1.14.15
-
-#for development purposes
-pylint==2.5.3
-autopep8==1.5.3
