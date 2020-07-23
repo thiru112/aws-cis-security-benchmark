@@ -1,7 +1,15 @@
 # aws-cis-security-benchmark
 
-This script will evaluate your AWS account against CIS Amazon Web Services Foundations Benchmark `v1.2.0 - 05-23-2018`. It automates the entire checklist, instead of manually checking each control manually.
+This script will evaluate your AWS account against CIS Amazon Web Services Foundations Benchmark `v1.2.0 - 05-23-2018`. It automates the entire checklist, instead of manually checking each control manually. The policy script `aws_script_policy.json` is minimum permission that this script need to execute in AWS environment.
 
+![HTML REPORT](img1.png)
+![HTML REPORT](img2.png)
+
+## Dependencies
+- Need to install `awscli` in to your machine
+- `python3` must be installed.Now follow these steps
+- Type `aws configure` in CLI.
+- Now enter the Access Key, secret key and choose you region
 ## How to Setup and run
 
 First of all install the dependencies.
