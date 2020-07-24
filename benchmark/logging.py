@@ -45,7 +45,8 @@ def control_2_2_cloudtrail_log_file_validation():
     else:
         for each_trail in cloudtrial_describe_trails:
             if each_trail['LogFileValidationEnabled'] is False:
-                cont.fail_reason = 'Logfile Validation is not enabled'
+                if 'Logfile Validation is not enabled' not in cont.fail_reason:
+                    cont.fail_reason = 'Logfile Validation is not enabled'
                 cont.offenders = each_trail['TrailARN']
     if not cont.offenders:
         cont.result = True
@@ -62,14 +63,18 @@ def control_2_3_cloudtrail_s3_not_public_accessable():
         for grant in s3_grants:
             if 'URI' in grant:
                 if grant['URI'] == 'http://acs.amazonaws.com/groups/global/AuthenticatedUsers' or grant['URI'] == 'http://acs.amazonaws.com/groups/global/AllUsers':
-                    cont.fail_reason = 'All Users or Authenticated Users are granted privelge to the bucket'
+                    fail_res = 'All Users or Authenticated Users are granted privelge to the bucket'
+                    if fail_res not in cont.fail_reason:
+                        cont.fail_reason = fail_res
                     cont.offenders = each_trail_bucket['S3BucketName']
 
         bucket_policy = loads(S3_CLIENT.get_bucket_policy(
             Bucket=each_trail_bucket['S3BucketName'])['Policy'])['Statement']
         for policy in bucket_policy:
             if policy['Effect'] == 'Allow' and ('*' in policy['Principal'] or 'AWS' in policy['Principal']):
-                cont.fail_reason = 'Bucket policy is set for Public access'
+                fail_res = 'Bucket policy is set for Public access'
+                if fail_res not in cont.fail_reason:
+                    cont.fail_reason = fail_res
                 cont.offenders = each_trail_bucket['S3BucketName']
 
     if not cont.offenders:
@@ -84,16 +89,21 @@ def control_2_4_cloudtrail_integrated_cloudwatch():
     for each_trail in cloudtrial_describe_trails:
         if 'CloudWatchLogsLogGroupArn' in each_trail or 'LatestCloudWatchLogsDeliveryTime' in CLOUDTRAIL_CLIENT.get_trail_status(Name=each_trail['Name']):
             if not each_trail['CloudWatchLogsLogGroupArn']:
-                cont.fail_reason = 'CloudWatch Logs Group Arn is empty'
+                fail_res = 'CloudWatch Logs Group Arn is empty'
+                if fail_res not in cont.fail_reason:
+                    cont.fail_reason = fail_res
                 cont.offenders = each_trail['TrailARN']
             a = datetime.now(tz=tz.tzlocal()) - timedelta(days=1)
             delivery_time = CLOUDTRAIL_CLIENT.get_trail_status(Name=each_trail['Name'])[
                 'LatestCloudWatchLogsDeliveryTime']
             if delivery_time <= datetime.now(tz=tz.tzlocal()) - timedelta(days=1):
-                cont.fail_reason = 'Latest CloudWatch Logs Delivery Time is greater than one day'
+                fail = 'Latest CloudWatch Logs Delivery Time is greater than one day'
+                if fail not in cont.fail_reason:
+                    cont.fail_reason = fail
                 cont.offenders = each_trail['TrailARN']
         else:
-            cont.fail_reason = "CloudTrail logs doesn't attached to CloudWatch Logs log group"
+            if "CloudTrail logs doesn't attached to CloudWatch Logs log group" not in cont.fail_reason:
+                cont.fail_reason = "CloudTrail logs doesn't attached to CloudWatch Logs log group" 
             cont.offenders = each_trail['TrailARN']
 
     if not cont.offenders:
@@ -141,7 +151,8 @@ def control_2_6_s3_logging_enabled_cts3_bucket():
         if 'LoggingEnabled' in S3_CLIENT.get_bucket_logging(Bucket=each_trail['S3BucketName']):
             continue
         else:
-            cont.fail_reason = 'CloudTrail Bucket logging is not enabled'
+            if 'CloudTrail Bucket logging is not enabled' not in cont.fail_reason:
+                cont.fail_reason = 'CloudTrail Bucket logging is not enabled'
             cont.offenders = each_trail['Name'] + \
                 ' => ' + each_trail['S3BucketName']
 

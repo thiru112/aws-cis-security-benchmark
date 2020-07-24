@@ -1,4 +1,5 @@
 from boto3 import resource
+from botocore.exceptions import ClientError
 from constants.constant import IAM_CLIENT, now, fmt
 from constants.controls import Control
 from csv import DictReader
@@ -11,21 +12,25 @@ def get_cred_report():
     """
     x = 0
     status = ''
-    while IAM_CLIENT.generate_credential_report()['State'] != "COMPLETE":
-        time.sleep(2)
-        x = x + 1
-        if x == 5:
-            status = "Failure"
-            break
-    if "Fail" in status:
-        return status
-    cred_response = IAM_CLIENT.get_credential_report()
-    reader = DictReader(cred_response['Content'].decode(
-        'utf-8').splitlines(), delimiter=',')
-    report = list()
-    for row in reader:
-        report.append(row)
-    return report
+    try:
+        while IAM_CLIENT.generate_credential_report()['State'] != "COMPLETE":
+            time.sleep(2)
+            x = x + 1
+            if x == 5:
+                status = "Failure"
+                break
+        if "Fail" in status:
+            return status
+        cred_response = IAM_CLIENT.get_credential_report()
+        reader = DictReader(cred_response['Content'].decode(
+            'utf-8').splitlines(), delimiter=',')
+        report = list()
+        for row in reader:
+            report.append(row)
+        return report
+    except ClientError as ce:
+        if ce.response['Error']['Code'] == 'LimitExceededException':
+            print('API call limit exceeded')
 
 
 def get_password_policy():
@@ -94,7 +99,8 @@ def control_1_3_creds_unused_90_days():
                 passd_date = (datetime.strptime(
                     now, fmt) - datetime.strptime(each_report['password_last_used'], fmt))
                 if passd_date.days > 90:
-                    cont.fail_reason = 'Password unused more than 90 days.'
+                    if 'Password unused more than 90 days.' not in cont.fail_reason:
+                        cont.fail_reason = 'Password unused more than 90 days.'
                     cont.offenders = each_report['arn'] + "=>:password"
         except:
             pass
@@ -104,7 +110,8 @@ def control_1_3_creds_unused_90_days():
                 access_key_1_date = (datetime.strptime(
                     now, fmt) - datetime.strptime(each_report['access_key_1_last_used_date'], fmt))
                 if access_key_1_date.days > 90:
-                    cont.fail_reason = 'Access key unused more than 90 days.'
+                    if 'Access key unused more than 90 days.' not in cont.fail_reason:
+                        cont.fail_reason = 'Access key unused more than 90 days.'
                     cont.offenders = each_report['arn'] + "=>:access_key_1"
         except:
             pass
@@ -114,7 +121,8 @@ def control_1_3_creds_unused_90_days():
                 access_key_1_date = (datetime.strptime(
                     now, fmt) - datetime.strptime(each_report['access_key_2_last_used_date'], fmt))
                 if access_key_1_date.days > 90:
-                    cont.fail_reason = 'Access key unused more than 90 days.'
+                    if 'Access key unused more than 90 days.' not in cont.fail_reason:
+                        cont.fail_reason = 'Access key unused more than 90 days.'
                     cont.offenders = each_report['arn'] + "=>:access_key_2"
         except:
             pass
@@ -133,14 +141,16 @@ def control_1_4_access_key_rotated():
             access_key_1_date = (datetime.strptime(
                 now, fmt) - datetime.strptime(each_report['access_key_1_last_used_date'], fmt))
             if access_key_1_date.days > 90:
-                cont.fail_reason = 'Access key unused more than 90 days.'
+                if 'Access key unused more than 90 days.' not in cont.fail_reason:
+                    cont.fail_reason = 'Access key unused more than 90 days.'
                 cont.offenders = each_report['arn'] + "=>:access_key_1"
 
         if each_report['access_key_2_active'] == 'true':
             access_key_1_date = (datetime.strptime(
                 now, fmt) - datetime.strptime(each_report['access_key_2_last_used_date'], fmt))
             if access_key_1_date.days > 90:
-                cont.fail_reason = 'Access key unused more than 90 days.'
+                if 'Access key unused more than 90 days.' not in cont.fail_reason:
+                    cont.fail_reason = 'Access key unused more than 90 days.'
                 cont.offenders = each_report['arn'] + "=>:access_key_2"
     if not cont.offenders:
         cont.result = True
@@ -320,10 +330,12 @@ def control_1_16_policy_attached_grp_roles():
             if user is None:
                 continue
             if IAM_CLIENT.list_attached_user_policies(UserName=user['UserName'])['AttachedPolicies']:
-                cont.fail_reason = "Managed Policies attached directly to user."
+                if 'Managed Policies attached directly to user.' not in cont.fail_reason:
+                    cont.fail_reason = "Managed Policies attached directly to user."
                 cont.offenders = user['Arn'] + ":=> Managed policy"
             if IAM_CLIENT.list_user_policies(UserName=user['UserName'])['PolicyNames']:
-                cont.fail_reason = "Inline Policies are attached directly to user."
+                if 'Inline Policies are attached directly to user.' not in cont.fail_reason:
+                    cont.fail_reason = "Inline Policies are attached directly to user."
                 cont.offenders = user['Arn'] + ":=> Inline policy"
     if not cont.offenders:
         cont.result = True
@@ -383,7 +395,8 @@ def control_1_21_intial_access_keys_setup():
         for user in users['Users']:
             for access_time in IAM_CLIENT.list_access_keys(UserName=user['UserName'])['AccessKeyMetadata']:
                 if access_time['CreateDate'] == access_time['CreateDate']:
-                    cont.fail_reason = 'Keys that were created at the same time as the user profile'
+                    if 'Keys that were created at the same time as the user profile' not in cont.fail_reason:
+                        cont.fail_reason = 'Keys that were created at the same time as the user profile'
                     cont.offenders = user['UserName']
     if not cont.offenders:
         cont.result = True
@@ -404,7 +417,8 @@ def control_1_22_iam_full_admin_privileges():
                     if 'Action' in each_statement.keys() and each_statement['Effect'] == 'Allow':
                         if isinstance(each_statement['Action'], str) or isinstance(each_statement['Resource'], str):
                             if each_statement['Action'] == '*' and each_statement['Resource'] == '*':
-                                cont.fail_reason = 'IAM policies has full "*:*" administrative privilege'
+                                if 'IAM policies has full "*:*" administrative privilege' not in cont.fail_reason:
+                                    cont.fail_reason = 'IAM policies has full "*:*" administrative privilege'
                                 cont.offenders = each_policy['Arn']
 
     if not cont.offenders:

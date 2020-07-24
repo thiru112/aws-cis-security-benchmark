@@ -13,11 +13,13 @@ def control_4_1_no_security_ingress_port_22():
                 for each_ip_perm in group['IpPermissions']:
                     try:
                         if int(each_ip_perm['FromPort']) <= 22 <= int(each_ip_perm['ToPort']) and '0.0.0.0/0' in str(each_ip_perm['IpRanges']):
-                            cont.fail_reason = 'Found Security Group with port 22 open to the internet (0.0.0.0/0)'
+                            if not cont.fail_reason:
+                                cont.fail_reason = 'Found Security Group with port 22 open to the internet (0.0.0.0/0)'
                             cont.offenders = group['GroupId']
                     except:
                         if str(each_ip_perm['IpProtocol']) == '-1' and '0.0.0.0/0' in str(each_ip_perm['IpRanges']):
-                            cont.fail_reason = 'Found Security Group with port 22 open to the internet (0.0.0.0/0)'
+                            if not cont.fail_reason:
+                                cont.fail_reason = 'Found Security Group with port 22 open to the internet (0.0.0.0/0)'
                             cont.offenders = group['GroupId']
     if not cont.offenders:
         cont.result = True
@@ -36,11 +38,13 @@ def control_4_2_no_security_ingress_port_3389():
                 for each_ip_perm in group['IpPermissions']:
                     try:
                         if int(each_ip_perm['FromPort']) <= 3389 <= int(each_ip_perm['ToPort']) and '0.0.0.0/0' in str(each_ip_perm['IpRanges']):
-                            cont.fail_reason = 'Found Security Group with port 3389 open to the internet (0.0.0.0/0)'
+                            if not cont.fail_reason:
+                                cont.fail_reason = 'Found Security Group with port 3389 open to the internet (0.0.0.0/0)'
                             cont.offenders = group['GroupId']
                     except:
                         if str(each_ip_perm['IpProtocol']) == '-1' and '0.0.0.0/0' in str(each_ip_perm['IpRanges']):
-                            cont.fail_reason = 'Found Security Group with port 3389 open to the internet (0.0.0.0/0)'
+                            if not cont.fail_reason:
+                                cont.fail_reason = 'Found Security Group with port 3389 open to the internet (0.0.0.0/0)'
                             cont.offenders = group['GroupId']
     if not cont.offenders:
         cont.result = True
@@ -56,7 +60,8 @@ def control_4_3_security_group_vpc_restricts():
     for groups in security_groups_iterator.paginate(Filters=[{'Name': 'group-name', 'Values': ['default', ]}, ]):
         for group in groups['SecurityGroups']:
             if not (len(group['IpPermissions']) + len(group['IpPermissionsEgress'])) == 0:
-                cont.fail_reason = 'Default security groups with ingress or egress rules discovered'
+                if not cont.fail_reason:
+                    cont.fail_reason = 'Default security groups with ingress or egress rules discovered'
                 cont.offenders = group['GroupId']
     if not cont.offenders:
         cont.result = True
