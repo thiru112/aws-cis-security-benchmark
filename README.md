@@ -17,7 +17,7 @@ First of all install the dependencies.
 > `pip install -r requirements.txt`
 
 ```
-usage: python3 aws-cis-benchmarker [optional arguments]
+usage: python3 aws-cis-benchmark.py [optional arguments]
 
 Tool to benchmark your AWS environment against CIS
 

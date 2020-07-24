@@ -1,6 +1,6 @@
 from argparse import ArgumentParser, RawTextHelpFormatter
 
-arg_parse = ArgumentParser(prog='aws-cis-benchmarker',
+arg_parse = ArgumentParser(prog='aws-cis-benchmark.py',
                            description='Tool to benchmark your AWS environment against CIS',
                            usage='python3 %(prog)s [optional arguments]',
                            formatter_class=RawTextHelpFormatter)
