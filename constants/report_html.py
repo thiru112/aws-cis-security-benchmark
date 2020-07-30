@@ -190,13 +190,13 @@ html2 = """
     $(function(){
       $.each(output, function(key, value){
         if (value.result == true){
-          $("tbody").append('<tr  class="table-success"><td>'+value.control_id+'</td>'+'<td>'+value.scored+'</td>'+'<td>'+'Passed'+'</td>'+'<td>'+value.desc+'</td>'+'<td>'+value.fail_reason+'</td>'+'<td>'+value.offenders+'</td>');
+          $("tbody").append('<tr  class="table-success"><td>'+value.control_id+'</td>'+'<td>'+value.scored.toString().toUpperCase()+'</td>'+'<td>'+'Passed'+'</td>'+'<td>'+value.desc+'</td>'+'<td>'+value.fail_reason+'</td>'+'<td>'+value.offenders.toString().replace(',','<br/>')+'</td>');
         }
         if (value.result == false){
-          $("tbody").append('<tr  class="table-danger"><td>'+value.control_id+'</td>'+'<td>'+value.scored+'</td>'+'<td>'+'Fail'+'</td>'+'<td>'+value.desc+'</td>'+'<td>'+value.fail_reason+'</td>'+'<td>'+value.offenders+'</td>');
+          $("tbody").append('<tr  class="table-danger"><td>'+value.control_id+'</td>'+'<td>'+value.scored.toString().toUpperCase()+'</td>'+'<td>'+'Fail'+'</td>'+'<td>'+value.desc+'</td>'+'<td>'+value.fail_reason+'</td>'+'<td>'+value.offenders.toString().replace(',','<br/>')+'</td>');
         }
         if (value.result == null){
-          $("tbody").append('<tr  class="table-warning"><td>'+value.control_id+'</td>'+'<td>'+value.scored+'</td>'+'<td>'+'Not assessed'+'</td>'+'<td>'+value.desc+'</td>'+'<td>'+value.fail_reason+'</td>'+'<td>'+value.offenders+'</td>');
+          $("tbody").append('<tr  class="table-warning"><td>'+value.control_id+'</td>'+'<td>'+value.scored.toString().toUpperCase()+'</td>'+'<td>'+'Not assessed'+'</td>'+'<td>'+value.desc+'</td>'+'<td>'+value.fail_reason+'</td>'+'<td>'+value.offenders.toString().replace(',','<br/>')+'</td>');
         }
       });
     });

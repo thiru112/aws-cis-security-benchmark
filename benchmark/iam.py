@@ -138,20 +138,28 @@ def control_1_4_access_key_rotated():
     report = CRED_REPORT
     for each_report in report:
         if each_report['access_key_1_active'] == 'true':
-            access_key_1_date = (datetime.strptime(
-                now, fmt) - datetime.strptime(each_report['access_key_1_last_used_date'], fmt))
-            if access_key_1_date.days > 90:
-                if 'Access key unused more than 90 days.' not in cont.fail_reason:
-                    cont.fail_reason = 'Access key unused more than 90 days.'
+            if each_report['access_key_1_last_used_date'] == 'N/A':
+                cont.fail_reason = 'Access key unused more than 90 days.'
                 cont.offenders = each_report['arn'] + "=>:access_key_1"
+            else:
+                access_key_1_date = (datetime.strptime(
+                    now, fmt) - datetime.strptime(each_report['access_key_1_last_used_date'], fmt))
+                if access_key_1_date.days > 90:
+                    if 'Access key unused more than 90 days.' not in cont.fail_reason:
+                        cont.fail_reason = 'Access key unused more than 90 days.'
+                    cont.offenders = each_report['arn'] + "=>:access_key_1"
 
         if each_report['access_key_2_active'] == 'true':
-            access_key_1_date = (datetime.strptime(
-                now, fmt) - datetime.strptime(each_report['access_key_2_last_used_date'], fmt))
-            if access_key_1_date.days > 90:
-                if 'Access key unused more than 90 days.' not in cont.fail_reason:
-                    cont.fail_reason = 'Access key unused more than 90 days.'
-                cont.offenders = each_report['arn'] + "=>:access_key_2"
+            if each_report['access_key_1_last_used_date'] == 'N/A':
+                cont.fail_reason = 'Access key unused more than 90 days.'
+                cont.offenders = each_report['arn'] + "=>:access_key_1"
+            else:
+                access_key_1_date = (datetime.strptime(
+                    now, fmt) - datetime.strptime(each_report['access_key_2_last_used_date'], fmt))
+                if access_key_1_date.days > 90:
+                    if 'Access key unused more than 90 days.' not in cont.fail_reason:
+                        cont.fail_reason = 'Access key unused more than 90 days.'
+                    cont.offenders = each_report['arn'] + "=>:access_key_2"
     if not cont.offenders:
         cont.result = True
 
